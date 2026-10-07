@@ -1,0 +1,2 @@
+# Ajoute ici les fingerprints de faux positifs validés.
+# Format : <commit>:<file>:<rule>:<startLine>

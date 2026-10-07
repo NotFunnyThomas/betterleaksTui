@@ -1,0 +1,88 @@
+plugins {
+  id 'java'
+  id 'application'
+  id 'org.springframework.boot' version '3.3.4'
+  id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'fr.example'
+version = '0.1.0'
+
+repositories {
+  mavenCentral()
+  gradlePluginPortal()
+  mavenLocal()
+}
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_21
+  targetCompatibility = JavaVersion.VERSION_21
+}
+
+compileJava {
+  options.encoding = 'UTF-8'
+  options.compilerArgs << '-parameters'
+}
+
+compileTestJava {
+  options.encoding = 'UTF-8'
+}
+
+
+application {
+  mainClass = 'fr.example.musicshop.MusicShopApplication'
+}
+
+dependencies {
+  // Web API
+  implementation 'org.springframework.boot:spring-boot-starter-web'
+  implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+  // TUI (Betterleaks dashboard)
+  implementation 'dev.tamboui:tamboui-core:0.4.0'
+  implementation 'dev.tamboui:tamboui-tui:0.4.0'
+  implementation 'dev.tamboui:tamboui-toolkit:0.4.0'
+  implementation 'dev.tamboui:tamboui-panama-backend:0.4.0'
+  implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
+
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+  useJUnitPlatform()
+}
+
+// ---------------------------------------------------------------------------
+// Task 'betterLeaks' : génère un wrapper shell autonome pour lancer le TUI.
+//
+// Pourquoi un script shell plutôt que ./gradlew betterLeaks direct ?
+// Le daemon Gradle ne transmet pas stdin en mode raw ; les flèches et touches
+// spéciales ne passent donc pas au TUI. On délègue l'exécution à bash avec
+// un vrai TTY.
+// ---------------------------------------------------------------------------
+def registerTuiTask(String taskName, String mainClass, String scriptName, String desc) {
+  tasks.register(taskName) {
+    group = 'verification'
+    description = desc
+    dependsOn 'classes'
+    def scriptFile = layout.buildDirectory.file("bin/${scriptName}").get().asFile
+    outputs.file(scriptFile)
+    doLast {
+      scriptFile.parentFile.mkdirs()
+      def cp = sourceSets.main.runtimeClasspath.asPath
+      def defaultTarget = project.projectDir.absolutePath
+      scriptFile.text = """#!/usr/bin/env bash
+target="\${1:-${defaultTarget}}"
+exec "\${JAVA_HOME:-${System.getProperty('java.home')}}/bin/java" \\
+  --enable-native-access=ALL-UNNAMED \\
+  -classpath '${cp}' \\
+  ${mainClass} "\$target"
+"""
+      scriptFile.setExecutable(true)
+      println "\nRun: ${scriptFile.absolutePath}\n"
+    }
+  }
+}
+
+registerTuiTask('betterLeaks', 'tui.BetterleaksTui', 'betterleaks-tui',
+        'Génère build/bin/betterleaks-tui (à lancer depuis le shell).')
