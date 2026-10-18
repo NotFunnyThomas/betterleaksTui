@@ -22,9 +22,6 @@ export HTTPS_PROXY="$HTTP_PROXY"
 export NO_PROXY="localhost,127.0.0.1,.corp,.local"
 ```
 
-Évite d'écrire les identifiants en clair : préfère une variable d'environnement
-système ou un gestionnaire de secrets. Ne commite jamais ces valeurs.
-
 ## Ouverture avec IntelliJ
 1. `File` → `Remote Development` → `Dev Containers` → `New Dev Container`
 2. Pointer vers ce dépôt / la branche courante

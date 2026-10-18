@@ -36,7 +36,7 @@ fi
 
 cat <<'EOF'
 
-[post-create] Prêt. Lance l'application quand tu veux :
+[post-create] Prêt.
 
   ./gradlew bootRun                      # mode dev, logs attachés
   ./gradlew bootJar && \
