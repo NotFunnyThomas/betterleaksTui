@@ -1,0 +1,48 @@
+{
+	"name": "MusicShop Dev Container",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": "..",
+		"args": {
+			"HTTP_PROXY": "${localEnv:HTTP_PROXY}",
+			"HTTPS_PROXY": "${localEnv:HTTPS_PROXY}",
+			"NO_PROXY": "${localEnv:NO_PROXY:localhost,127.0.0.1,.local}"
+		}
+	},
+	"containerEnv": {
+		"HTTP_PROXY": "${localEnv:HTTP_PROXY}",
+		"HTTPS_PROXY": "${localEnv:HTTPS_PROXY}",
+		"http_proxy": "${localEnv:HTTP_PROXY}",
+		"https_proxy": "${localEnv:HTTPS_PROXY}",
+		"NO_PROXY": "${localEnv:NO_PROXY:localhost,127.0.0.1,.local}",
+		"no_proxy": "${localEnv:NO_PROXY:localhost,127.0.0.1,.local}"
+	},
+	"remoteUser": "vscode",
+	"workspaceFolder": "/workspace",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+	"mounts": [
+		"source=${localEnv:HOME}/.aws,target=/home/vscode/.aws,type=bind,consistency=cached"
+	],
+	"customizations": {
+		"jetbrains": {
+			"backend": "IntelliJ",
+			"plugins": [
+				"org.intellij.plugins.hcl",
+				"PythonCore"
+			]
+		},
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"hashicorp.terraform",
+				"amazonwebservices.aws-toolkit-vscode",
+				"redhat.java",
+				"vscjava.vscode-gradle"
+			]
+		}
+	},
+	"postCreateCommand": "bash .devcontainer/post-create.sh",
+	"forwardPorts": [
+		8080
+	]
+}
